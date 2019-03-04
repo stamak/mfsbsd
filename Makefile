@@ -498,7 +498,7 @@ ${WRKDIR}/.boot_done:
 .endif
 	${_v}${RM} -rf ${_BOOTDIR}/${KERNDIR} ${_BOOTDIR}/*.symbols
 	${_v}${MKDIR} -p ${WRKDIR}/boot
-	${_v}${CP} -p ${_DESTDIR}/boot/pmbr ${_DESTDIR}/boot/gptboot ${WRKDIR}/boot
+	${_v}${CP} -p ${_DESTDIR}/boot/pmbr ${_DESTDIR}/boot/gptboot ${_DESTDIR}/boot/boot1.efi ${WRKDIR}/boot
 	${_v}${TOUCH} ${WRKDIR}/.boot_done
 	@echo " done"
 

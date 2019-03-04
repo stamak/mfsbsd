@@ -61,13 +61,30 @@ else
   TIME=
 fi
 
+###
 gpart create -s gpt ${unit}
-gpart add -t freebsd-boot -b 40 -l boot -s 472 ${unit}
-gpart bootcode -b ${BOOTDIR}/pmbr -p ${BOOTDIR}/gptboot -i 1 ${unit}
+
+    echo "Doing legacy boot"
+    gpart add -t freebsd-boot -b 40 -l boot -s 472 ${unit}
+    gpart bootcode -b ${BOOTDIR}/pmbr -p ${BOOTDIR}/gptboot -i 1 ${unit}
+
+    echo "Doing UEFI boot"
+    gpart add -t efi -s 40M ${unit}
+    newfs_msdos /dev/${unit}p2
+    mkdir -p ${BOOTDIR}/mount
+    mount -t msdosfs /dev/${unit}p2 ${BOOTDIR}/mount
+    mkdir -p ${BOOTDIR}/mount/EFI/BOOT
+    cp ${BOOTDIR}/boot1.efi ${BOOTDIR}/mount/EFI/BOOT/BOOTX64.efi
+    umount ${BOOTDIR}/mount
+    rm -rf ${BOOTDIR}/mount
+
+
+
 gpart add -t freebsd-ufs -l rootfs ${unit}
+##
 
 ${TIME} makefs -B little ${TMPIMG} ${FSPROTO}
-${TIME} dd if=${TMPIMG} of=/dev/${unit}p2 bs=128k
+${TIME} dd if=${TMPIMG} of=/dev/${unit}p3 bs=128k
 
 if [ -n "$VERBOSE" ]; then
   set +x
